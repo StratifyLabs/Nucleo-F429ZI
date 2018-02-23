@@ -1,0 +1,15 @@
+{
+    "bootsuffix": "_boot",
+    "buildprefix": "build_",
+    "change": "Added pio devices to /dev",
+    "description": "This BSP can be used to run Stratify OS on the STM32F Nucleo-F429ZI board.",
+    "github": "https://github.com/StratifyLabs/Nucleo-F429ZI",
+    "hardwareid": "0x0000000F",
+    "name": "Nucleo-F429ZI",
+    "permissions": "public",
+    "publisher": "Stratify Labs, Inc",
+    "tags": "stm32,arm,cortex-m4",
+    "type": "StratifyKernel",
+    "uid": "QSW7bQHeDqhJEcZ0mxQ5SmEYUSL2",
+    "version": "0.1"
+}
