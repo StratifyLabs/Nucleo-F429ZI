@@ -30,22 +30,22 @@ const struct __sFILE_fake __sf_fake_stdin;
 const struct __sFILE_fake __sf_fake_stdout;
 const struct __sFILE_fake __sf_fake_stderr;
 
-#define STFY_SYSTEM_CLOCK 168000000
+#define SOS_SYSTEM_CLOCK 168000000
 
 #define USB_RX_BUFFER_SIZE 512
 char usb_rx_buffer[USB_RX_BUFFER_SIZE] MCU_SYS_MEM;
 
 const mcu_board_config_t mcu_board_config = {
 		.core_osc_freq = 8000000,
-		.core_cpu_freq = STFY_SYSTEM_CLOCK,
-		.core_periph_freq = STFY_SYSTEM_CLOCK,
+        .core_cpu_freq = SOS_SYSTEM_CLOCK,
+        .core_periph_freq = SOS_SYSTEM_CLOCK,
 		.usb_max_packet_zero = MCU_CORE_USB_MAX_PACKET_ZERO_VALUE,
-        .debug_uart_port = 2, //USART3 - is connected to mbed console
+        .debug_uart_port = 2, //USART3 - is connected to STLink Virtual Serial port
 		.debug_uart_attr = {
 				.pin_assignment =
 				{
-						.rx = {3, 9},
-						.tx = {3, 8},
+                        .rx = {3, 9}, //PD8
+                        .tx = {3, 8}, //PD9
 						.cts = {0xff, 0xff},
 						.rts = {0xff, 0xff}
 				},
