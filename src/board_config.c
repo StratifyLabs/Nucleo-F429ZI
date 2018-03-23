@@ -54,6 +54,20 @@ static void board_event_handler(int event, void * args);
 #define USB_RX_BUFFER_SIZE 512
 char usb_rx_buffer[USB_RX_BUFFER_SIZE] MCU_SYS_MEM;
 
+stm32_arch_config_t stm32_arch_config = {
+    .o_flags = 0,
+    .clock_pllm = 4,
+    .clock_plln = 168,
+    .clock_pllp = 2,
+    .clock_pllq = 7,
+    .clock_ahb_clock_divider = 1,
+    .clock_apb1_clock_divider = 2,
+    .clock_apb2_clock_divider = 1,
+    .clock_48_clock_selection = 0, //NA
+    .clock_voltage_scale = 1,
+    .clock_flash_latency = 5
+};
+
 const mcu_board_config_t mcu_board_config = {
     .core_osc_freq = 8000000,
     .core_cpu_freq = SOS_BOARD_SYSTEM_CLOCK,
@@ -72,7 +86,8 @@ const mcu_board_config_t mcu_board_config = {
     .event_handler = board_event_handler,
     .led = {1, 7},
     .usb_rx_buffer = usb_rx_buffer,
-    .usb_rx_buffer_size = USB_RX_BUFFER_SIZE
+    .usb_rx_buffer_size = USB_RX_BUFFER_SIZE,
+    .arch_config = &stm32_arch_config
 };
 
 void board_event_handler(int event, void * args){
@@ -201,8 +216,6 @@ const devfs_device_t mem0 = DEVFS_DEVICE("mem0", mcu_mem, 0, 0, 0, 0666, SOS_USE
 const sysfs_t sysfs_list[] = {
     APPFS_MOUNT("/app", &mem0, SYSFS_ALL_ACCESS), //the folder for ram/flash applications
     DEVFS_MOUNT("/dev", devfs_list, SYSFS_READONLY_ACCESS), //the list of devices
-    //SFFS_MOUNT("/home", &sffs_cfg, SYSFS_ALL_ACCESS), //the stratify file system on external RAM
-    //FATFS("/home", &fatfs_cfg, SYSFS_ALL_ACCESS), //fat filesystem with external SD card
     SYSFS_MOUNT("/", sysfs_list, SYSFS_READONLY_ACCESS), //the root filesystem (must be last)
     SYSFS_TERMINATOR
 };
