@@ -67,7 +67,6 @@ link_transport_phy_t link_transport_open(const char * name, int baudrate){
 			mcu_pin(0xff,0xff),
 			1); //USB pin is active high
 
-
 	mcu_debug_user_printf("Returned %d\n", fd);
 
 	return fd;

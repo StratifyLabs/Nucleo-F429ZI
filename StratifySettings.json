@@ -1,7 +1,7 @@
 {
     "bootsuffix": "_boot",
     "buildprefix": "build_",
-    "change": "First working version",
+    "change": "BSP Cleanup",
     "changes": {
         "-L6TkvajO97uo_v6LeM5": {
             "description": "First working version",
@@ -10,6 +10,14 @@
         "-L6TlES5EJAhGZ5DhnHZ": {
             "description": "First working version",
             "version": "0.2"
+        },
+        "-L7AXgbx6ttJadLyGxd7": {
+            "description": "Updated to GCC 6.3.1",
+            "version": "0.3"
+        },
+        "-L8FB8907TYy3pWnZPH8": {
+            "description": "Updated to GCC 6.3.1, fixed version to 0.4",
+            "version": "0.4"
         }
     },
     "description": "This BSP can be used to run Stratify OS on the STM32F Nucleo-F429ZI board.",
@@ -21,5 +29,5 @@
     "tags": "stm32,arm,cortex-m4",
     "type": "StratifyKernel",
     "uid": "QSW7bQHeDqhJEcZ0mxQ5SmEYUSL2",
-    "version": "0.2"
+    "version": "0.5"
 }
