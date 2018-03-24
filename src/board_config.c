@@ -23,7 +23,6 @@ limitations under the License.
 #include <mcu/mcu.h>
 #include <mcu/debug.h>
 #include <mcu/periph.h>
-#include <device/microchip/sst25vf.h>
 #include <device/sys.h>
 #include <device/uartfifo.h>
 #include <device/usbfifo.h>
@@ -39,56 +38,15 @@ limitations under the License.
 
 #include "board_trace.h"
 #include "link_transport.h"
+#include "board_arch_config.h"
 
 //openocd -f interface/stlink-v2-1.cfg -f target/stm32f4x_stlink.cfg
 
-#define SOS_BOARD_SYSTEM_CLOCK 168000000
-#define SOS_BOARD_PERIPH_CLOCK (SOS_BOARD_SYSTEM_CLOCK/4)
-#define SOS_BOARD_SYSTEM_MEMORY_SIZE (8192*3)
-#define SOS_BOARD_TASK_TOTAL 10
 
 //--------------------------------------------MCU Configuration-------------------------------------------------
 
-static void board_event_handler(int event, void * args);
-
-#define USB_RX_BUFFER_SIZE 512
-char usb_rx_buffer[USB_RX_BUFFER_SIZE] MCU_SYS_MEM;
-
-stm32_arch_config_t stm32_arch_config = {
-    .o_flags = 0,
-    .clock_pllm = 4,
-    .clock_plln = 168,
-    .clock_pllp = 2,
-    .clock_pllq = 7,
-    .clock_ahb_clock_divider = 1,
-    .clock_apb1_clock_divider = 2,
-    .clock_apb2_clock_divider = 1,
-    .clock_48_clock_selection = 0, //NA
-    .clock_voltage_scale = 1,
-    .clock_flash_latency = 5
-};
-
-const mcu_board_config_t mcu_board_config = {
-    .core_osc_freq = 8000000,
-    .core_cpu_freq = SOS_BOARD_SYSTEM_CLOCK,
-    .core_periph_freq = SOS_BOARD_SYSTEM_CLOCK,
-    .usb_max_packet_zero = MCU_CORE_USB_MAX_PACKET_ZERO_VALUE,
-    .debug_uart_port = 2,
-    .debug_uart_attr = {
-        UART_DEFINE_ATTR(
-            UART_FLAG_SET_LINE_CODING_DEFAULT, 8, 115200,
-            3, 8, //tx port, pin
-            3, 9, //rx port, pin
-            0xff, 0xff, //rts port, pin
-            0xff, 0xff) //cts port, pin
-    },
-    .o_flags = MCU_BOARD_CONFIG_FLAG_LED_ACTIVE_HIGH,
-    .event_handler = board_event_handler,
-    .led = {1, 7},
-    .usb_rx_buffer = usb_rx_buffer,
-    .usb_rx_buffer_size = USB_RX_BUFFER_SIZE,
-    .arch_config = &stm32_arch_config
-};
+static void board_event_handler(int event, void * args); //optional event handler
+STM32_NUCLEO144_DECLARE_MCU_BOARD_CONFIG(SOS_BOARD_SYSTEM_CLOCK, board_event_handler, &stm32_arch_config, SOS_BOARD_USB_RX_BUFFER_SIZE);
 
 void board_event_handler(int event, void * args){
     switch(event){
@@ -123,7 +81,6 @@ void board_event_handler(int event, void * args){
 }
 
 //--------------------------------------------Stratify OS Configuration-------------------------------------------------
-
 const sos_board_config_t sos_board_config = {
     .clk_usecond_tmr = 1, //TIM2 -- 32 bit timer
     .task_total = SOS_BOARD_TASK_TOTAL,
@@ -131,9 +88,9 @@ const sos_board_config_t sos_board_config = {
     .stdout_dev = "/dev/stdio-out",
     .stderr_dev = "/dev/stdio-out",
     .o_sys_flags = SYS_FLAG_IS_STDIO_FIFO | SYS_FLAG_IS_TRACE,
-    .sys_name = "Nucleo-F429ZI",
-    .sys_version = "0.5",
-    .sys_id = "-L6TkvdQalXZTxgM_74-",
+    .sys_name = SOS_BOARD_NAME,
+    .sys_version = SOS_BOARD_VERSION,
+    .sys_id = SOS_BOARD_ID,
     .sys_memory_size = SOS_BOARD_SYSTEM_MEMORY_SIZE,
     .start = sos_default_thread,
     .start_args = &link_transport,
@@ -144,10 +101,25 @@ const sos_board_config_t sos_board_config = {
     .trace_event = board_trace_event
 };
 
+//This declares the task tables required by Stratify OS for applications and threads
 SOS_DECLARE_TASK_TABLE(SOS_BOARD_TASK_TOTAL);
 
 //--------------------------------------------Device Filesystem-------------------------------------------------
 
+
+/*
+ * Defaults configurations
+ *
+ * This provides the default pin assignments and settings for peripherals. If
+ * the defaults are not provided, the application must specify them.
+ *
+ * Defaults should be added for peripherals that are dedicated for use on the
+ * board. For example, if a UART has an external connection and label on the
+ * board, the BSP should provide the default configuration.
+ *
+ *
+ *
+ */
 UARTFIFO_DECLARE_CONFIG_STATE(uart0_fifo, 1024,
                               UART_FLAG_SET_LINE_CODING_DEFAULT, 8, 115200,
                               0, 2,
@@ -155,13 +127,11 @@ UARTFIFO_DECLARE_CONFIG_STATE(uart0_fifo, 1024,
                               0xff, 0xff,
                               0xff, 0xff);
 
-FIFO_DECLARE_CONFIG_STATE(stdio_in, 512);
-FIFO_DECLARE_CONFIG_STATE(stdio_out, 512);
+FIFO_DECLARE_CONFIG_STATE(stdio_in, SOS_BOARD_STDIO_BUFFER_SIZE);
+FIFO_DECLARE_CONFIG_STATE(stdio_out, SOS_BOARD_STDIO_BUFFER_SIZE);
 CFIFO_DECLARE_CONFIG_STATE_4(board_fifo, 256);
 
-/* This is the list of devices that will show up in the /dev folder
- * automatically.  By default, the peripheral devices for the MCU are available
- * plus some devices on the board.
+/* This is the list of devices that will show up in the /dev folder.
  */
 const devfs_device_t devfs_list[] = {
     //System devices
@@ -210,7 +180,18 @@ const devfs_device_t devfs_list[] = {
 };
 
 
-//--------------------------------------------Root Filesystem-------------------------------------------------
+//--------------------------------------------Root Filesystem---------------------------------------------------
+
+/*
+ * This is the root filesystem that determines what is mounted at /.
+ *
+ * The default is /app (for installing and running applciations in RAM and flash) and /dev which
+ * provides the device tree defined above.
+ *
+ * Additional filesystems (such as FatFs) can be added if the hardware and drivers
+ * are provided by the board.
+ *
+ */
 
 const devfs_device_t mem0 = DEVFS_DEVICE("mem0", mcu_mem, 0, 0, 0, 0666, SOS_USER_ROOT, S_IFBLK);
 const sysfs_t sysfs_list[] = {
