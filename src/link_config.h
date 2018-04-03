@@ -1,6 +1,6 @@
 /*
 
-Copyright 2011-2016 Tyler Gilbert
+Copyright 2011-2018 Stratify Labs, Inc
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -16,23 +16,12 @@ limitations under the License.
 
 */
 
+#ifndef LINK_TRANSPORT_H_
+#define LINK_TRANSPORT_H_
+
+#include <sos/link/transport_usb.h>
+extern link_transport_driver_t link_transport;
 
 
 
-#include <mcu/arch.h>
-
-#include "board_arch_config.h"
-
-const stm32_arch_config_t stm32_arch_config = {
-    .o_flags = 0,
-    .clock_pllm = 4,
-    .clock_plln = 168,
-    .clock_pllp = 2,
-    .clock_pllq = 7,
-    .clock_ahb_clock_divider = 1,
-    .clock_apb1_clock_divider = 2,
-    .clock_apb2_clock_divider = 1,
-    .clock_48_clock_selection = 0, //NA
-    .clock_voltage_scale = 1,
-    .clock_flash_latency = 5
-};
+#endif /* LINK_TRANSPORT_H_ */
