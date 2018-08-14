@@ -1,7 +1,7 @@
 {
     "bootsuffix": "_boot",
     "buildprefix": "build_",
-    "change": "Sync with nucleo144 projects",
+    "change": "Kernel 3.7.0b",
     "changes": {
         "-L6TkvajO97uo_v6LeM5": {
             "description": "First working version",
@@ -22,6 +22,10 @@
         "-L9fQdYaHY761G9LF58B": {
             "description": "Sync with nucleo144 projects",
             "version": "0.9"
+        },
+        "-LBgXXZ-2aMdf3ONPUqm": {
+            "description": "Kernel 3.7.0b",
+            "version": "0.10"
         }
     },
     "description": "This BSP can be used to run Stratify OS on the STM32F Nucleo-F429ZI board.",
@@ -33,5 +37,5 @@
     "tags": "stm32,arm,cortex-m4",
     "type": "StratifyKernel",
     "uid": "QSW7bQHeDqhJEcZ0mxQ5SmEYUSL2",
-    "version": "0.9"
+    "version": "0.10"
 }
