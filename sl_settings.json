@@ -1,0 +1,17 @@
+{
+   "description": "This BSP can be used to run Stratify OS on the STM32F Nucleo-F429ZI board.",
+   "github": "https://github.com/StratifyLabs/Nucleo-F429ZI",
+   "name": "Nucleo-F429ZI",
+   "permissions": "public",
+   "publisher": "Stratify Labs, Inc",
+   "tags": "stm32,arm,cortex-m4",
+   "type": "os",
+   "uid": "9cQyOTk3fZXOuMtPyf5j9X4H4b83",
+   "version": "0.10",
+   "hardwaredId": "0x0000000F",
+   "timestamp": 1544977292,
+   "documentId": "w4Lawd0RGPsQiDk6twa4",
+   "buildList": {
+      "QJgK2igqXZZXlyikLlRS": "0.10"
+   }
+}
